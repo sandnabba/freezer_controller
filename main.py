@@ -9,12 +9,19 @@ from freezer import Freezer
 
 MAX_TEMP = -18
 MIN_TEMP = -18.5
+AO_TOKEN = "aoeu"
+ENVIRONMENT= "dev"
 
 
 
 def send_metrics(freezer):
     print("Sending metrics")
-    print("AO-temp: ", freezer.CURRENT_TEMP)
+    ao = appoptics_metrics.connect(AO_TOKEN)
+
+    aoq = ao.new_queue()
+    aoq.add("freezer.temperature", freezer.CURRENT_TEMP, tags={'ENVIRONMENT': ENVIRONMENT})
+    aoq.submit()
+
 
 
 def main(freezer):
@@ -31,7 +38,10 @@ def main(freezer):
         print("Temp OK")
 
     # Send metrics:
-    #send_metrics(freezer)
+    try:
+        send_metrics(freezer)
+    except:
+        print("Error sending metrics")
 
 freezer = Freezer()
 while 1:
