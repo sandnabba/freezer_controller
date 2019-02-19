@@ -1,4 +1,4 @@
-from am2320.am2320 import AM2320
+from am2320_python.am2320 import AM2320
 
 try:
     import RPi.GPIO as GPIO
@@ -53,6 +53,7 @@ class Freezer:
             self.COMP_STATE = 1
         except:
             print("Error starting compressor")
+            self.COMP_STATE = 1
             pass
 
 
@@ -64,6 +65,7 @@ class Freezer:
             GPIO.output(COMP_GPIO_PIN, GPIO.LOW)
             self.COMP_STATE = 0
         except:
+            self.COMP_STATE = 0
             print("Error stopping compressor")
             pass
 
