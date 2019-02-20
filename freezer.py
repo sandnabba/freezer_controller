@@ -1,10 +1,6 @@
 from am2320_python.am2320 import AM2320
 
-try:
-    import RPi.GPIO as GPIO
-except:
-    print("Error importing GPIO lib")
-    pass
+import RPi.GPIO as GPIO
 
 class Freezer:
     # Temperature:
@@ -12,7 +8,7 @@ class Freezer:
     LAST_TEMP = 0.0
 
     # Compressor:
-    COMP_GPIO_PIN = 8
+    COMP_GPIO_PIN = 12
     COMP_STATE = 0
     COMP_ON_TIME = 0
     COMP_OFF_TIME = 0
@@ -23,10 +19,11 @@ class Freezer:
         print("Initiating freezer")
         self.CURRENT_TEMP = self.get_temperature()
         try:
-            GPIO.setmode(GPIO.BCM)
-            GPIO.setup(COMP_GPIO_PIN, GPIO.OUT, initial=GPIO.LOW)
-        except:
+            GPIO.setmode(GPIO.BOARD)
+            GPIO.setup(self.COMP_GPIO_PIN, GPIO.OUT, initial=GPIO.LOW)
+        except Exception as e:
             print("Error setting up GPIO pins")
+            print(e)
             pass
 
     @staticmethod
@@ -36,6 +33,7 @@ class Freezer:
             sensor = AM2320(1)
             (t,h) = sensor.readSensor()
             print(t, h)
+            return float(t)
         except FileNotFoundError:
             print("Could not get i2c device")
             return -18.1
@@ -49,7 +47,7 @@ class Freezer:
     def start(self):
         print("Starting Compressor")
         try:
-            GPIO.output(COMP_GPIO_PIN, GPIO.HIGH)
+            GPIO.output(self.COMP_GPIO_PIN, GPIO.HIGH)
             self.COMP_STATE = 1
         except:
             print("Error starting compressor")
@@ -62,7 +60,7 @@ class Freezer:
     def stop(self):
         print("Stopping Compressor")
         try:
-            GPIO.output(COMP_GPIO_PIN, GPIO.LOW)
+            GPIO.output(self.COMP_GPIO_PIN, GPIO.LOW)
             self.COMP_STATE = 0
         except:
             self.COMP_STATE = 0

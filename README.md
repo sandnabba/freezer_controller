@@ -11,6 +11,18 @@ Replace the old thermostat with Linux, Python, a relay and a thermometer.
 
 ### Logs
 
+# Installation
+`git submodule init` `git submodule update`
+
+Python virtual environment:
+
+
+Permissions to access I2C bus:
+`usermod -a -G i2c $USER`
+
+Permissions to access GPIO pins:
+`usermod -a -G gpio $USER`
+
 
 # Metrics
 ## What to alert on?
