@@ -1,6 +1,12 @@
 from am2320_python.am2320 import AM2320
 
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO
+except RuntimeError:
+    print("Not running on a Raspberry Pi, continuing anyway")
+    pass
+
+import time
 
 class Freezer:
     # Temperature:
@@ -18,12 +24,22 @@ class Freezer:
     def __init__(self):
         print("Initiating freezer")
         self.CURRENT_TEMP = self.get_temperature()
+
+        # Setup compressor pin:
         try:
             GPIO.setmode(GPIO.BOARD)
             GPIO.setup(self.COMP_GPIO_PIN, GPIO.OUT, initial=GPIO.LOW)
         except Exception as e:
             print("Error setting up GPIO pins")
             print(e)
+            pass
+
+        # Get current compressor state:
+        try:
+            self.COMP_STATE = GPIO.input(self.COMP_GPIO_PIN)
+            print("compressor is: ", self.COMP_STATE)
+        except:
+            print("Error reading compressor state")
             pass
 
     @staticmethod
@@ -48,24 +64,30 @@ class Freezer:
         print("Starting Compressor")
         try:
             GPIO.output(self.COMP_GPIO_PIN, GPIO.HIGH)
-            self.COMP_STATE = 1
         except:
             print("Error starting compressor")
-            self.COMP_STATE = 1
             pass
+        self.COMP_STATE = 1
+        self.COMP_ON_TIME = time.time()
 
 
         
     @classmethod
     def stop(self):
         print("Stopping Compressor")
-        try:
-            GPIO.output(self.COMP_GPIO_PIN, GPIO.LOW)
+        if (time.time() - self.COMP_ON_TIME) < 300:
+            wait_time = 300 - (time.time() - self.COMP_ON_TIME)
+            print("Compressor started less than 5 minutes ago, wait %d more seconds" % wait_time)
+            return wait_time
+
+        else:
+            try:
+                GPIO.output(self.COMP_GPIO_PIN, GPIO.LOW)
+            except:
+                print("Error stopping compressor")
+                pass
             self.COMP_STATE = 0
-        except:
-            self.COMP_STATE = 0
-            print("Error stopping compressor")
-            pass
+            self.COMP_OFF_TIME = time.time()
 
         
     
