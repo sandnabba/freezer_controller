@@ -19,7 +19,7 @@ def send_metrics(freezer):
 
 def main(freezer):
     print("Starting Main function")
-    print(f"Current temperature: ", round(freezer.CURRENT_TEMP, 2))
+    print("Current temperature: %.2f" % round(freezer.CURRENT_TEMP, 2))
 
     if freezer.CURRENT_TEMP > MAX_TEMP:
         # Temperature is to high:
