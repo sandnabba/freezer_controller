@@ -14,7 +14,7 @@ class Freezer:
     LAST_TEMP = 0.0
 
     # Compressor:
-    COMP_GPIO_PIN = 12
+    COMP_GPIO_PIN = 26 # This is the GPIO-pin, not the physical pin
     COMP_STATE = 0
     COMP_ON_TIME = 0
     COMP_OFF_TIME = 0
@@ -27,8 +27,8 @@ class Freezer:
 
         # Setup compressor pin:
         try:
-            GPIO.setmode(GPIO.BOARD)
-            GPIO.setup(self.COMP_GPIO_PIN, GPIO.OUT, initial=GPIO.LOW)
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(self.COMP_GPIO_PIN, GPIO.OUT)
         except Exception as e:
             print("Error setting up GPIO pins")
             print(e)
@@ -64,11 +64,11 @@ class Freezer:
         print("Starting Compressor")
         try:
             GPIO.output(self.COMP_GPIO_PIN, GPIO.HIGH)
+            self.COMP_STATE = 1
+            self.COMP_ON_TIME = time.time()
         except:
             print("Error starting compressor")
             pass
-        self.COMP_STATE = 1
-        self.COMP_ON_TIME = time.time()
 
 
         
