@@ -1,6 +1,18 @@
 # freezer_controller-
 Replace the old thermostat with Linux, Python, a relay and a thermometer.
 
+# Overview
+
+Components used:
+Raspberry Pi Zero W
+DS18B20 1-Wire thermometer
+AM2320B/SHT21 I2C thermometer + hygrometer
+A solid state relay
+ST7735R SPI display
+
+
+
+
 ## Functionality
 
 ### Thermometer
