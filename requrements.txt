@@ -1,2 +1,2 @@
-appoptics-metrics=5.0.0
-RPi.GPIO=0.6.5
+appoptics-metrics==5.0.0
+RPi.GPIO==0.6.5
