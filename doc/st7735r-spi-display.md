@@ -11,4 +11,4 @@ The display is connected to the pi using the following pins:
 |   GND   | GND |
 |   VCC   | 3.3v|
 
-<img src="../img/display_back.jpg" width="400">
+<img src="img/display_back.jpg" width="400">

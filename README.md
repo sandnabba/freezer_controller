@@ -14,9 +14,9 @@ Components used:
 # Installation
 First you need to prepare the Raspberry pi and the operating system.
 We are going to use both 1-Wire, I2C and SPI which will require some setup:
-`sudo echo "dtoverlay=w1-gpio" >> /boot/config.txt`
-`sudo echo "dtparam=i2c_arm=on" >> /boot/config.txt`
-`sudo echo "dtparam=spi=on" >> /boot/config.txt`
+`sudo echo "dtoverlay=w1-gpio" >> /boot/config.txt`  
+`sudo echo "dtparam=i2c_arm=on" >> /boot/config.txt`  
+`sudo echo "dtparam=spi=on" >> /boot/config.txt`  
 
 ## Permissions
 To be able to run the application as a user, you need access to the I2C bus and the GPIO pins.
