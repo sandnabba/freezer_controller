@@ -4,7 +4,7 @@ The driver is included in the official Linux kernel since a while a go, which ma
 
 Mine had the following pins, and this is how I connected it:  
 | Display | GPIO | Pin# |
-|:-------:|:----:|:----:|
+|---------|------|------|
 |   Led   | 9    | 21   |
 |   SCK   | 11   | 23   |
 |   SDA   | 10   | 19   |
