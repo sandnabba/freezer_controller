@@ -33,8 +33,8 @@ class Freezer:
         logger.info("Compressor_Pin: %s" % COMP_PIN)
         self.COMP_GPIO_PIN = COMP_PIN
         self.get_temperature()
-        logger.debug("Temp1: %s" % self.TEMP1)
-        logger.debug("Temp2: %s" % self.TEMP2)
+        logger.info("Temp1: %s" % self.TEMP1)
+        logger.info("Temp2: %s" % self.TEMP2)
 
         # Setup compressor pin:
         try:
@@ -48,7 +48,7 @@ class Freezer:
         # Get current compressor state:
         try:
             self.COMP_STATE = GPIO.input(self.COMP_GPIO_PIN)
-            logger.debug("compressor is: %s" % self.COMP_STATE)
+            logger.info("compressor is: %s" % self.COMP_STATE)
         except:
             logger.error("Error reading compressor state")
             pass

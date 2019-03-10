@@ -37,7 +37,7 @@ def send_metrics(freezer):
         return 0
     ####
     try:
-        print("Sending metrics")
+        logger.debug("Sending metrics to AppOptics")
         q = ao.new_queue()
         q.add('freezer.temperature', freezer.TEMP1, tags={'type': 'i2c'}, inherit_tags=True)
         q.add('freezer.temperature', freezer.TEMP2, tags={'type': '1w'}, inherit_tags=True)
