@@ -1,0 +1,7 @@
+GPIO_PINS = {
+    'COMP_PIN': 14,
+}
+APPOPTICS_KEY = "aoeu"
+
+MAX_TEMP = -17
+MIN_TEMP = -17.5

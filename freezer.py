@@ -1,4 +1,5 @@
 from am2320_python.am2320 import AM2320
+from w1thermsensor import W1ThermSensor
 
 try:
     import RPi.GPIO as GPIO
@@ -10,20 +11,25 @@ import time
 
 class Freezer:
     # Temperature:
-    CURRENT_TEMP = 0.0
-    LAST_TEMP = 0.0
+    TEMP1 = 0.0
+    TEMP2 = 0.0
+    HUMIDITY = 0.0
 
     # Compressor:
-    COMP_GPIO_PIN = 26 # This is the GPIO-pin, not the physical pin
+    COMP_GPIO_PIN = None # This is the GPIO-pin, not the physical pin, Connected to 14
     COMP_STATE = 0
     COMP_ON_TIME = 0
     COMP_OFF_TIME = 0
     COMP_STATE_CHANGE_TIME = 0
 
 
-    def __init__(self):
+    def __init__(self, COMP_PIN=None):
         print("Initiating freezer")
-        self.CURRENT_TEMP = self.get_temperature()
+        print("Compressor_Pin: ", COMP_PIN)
+        self.COMP_GPIO_PIN = COMP_PIN
+        self.get_temperature()
+        print("Temp1: ", self.TEMP1)
+        print("Temp2: ", self.TEMP2)
 
         # Setup compressor pin:
         try:
@@ -42,44 +48,64 @@ class Freezer:
             print("Error reading compressor state")
             pass
 
-    @staticmethod
-    def get_temperature():
-        print("Getting temperature")
+    #@classmethod
+    def get_temperature(self):
+        print("Getting temperature 1")
         try:
             sensor = AM2320(1)
             (t,h) = sensor.readSensor()
-            print(t, h)
-            return float(t)
+            #print(t, h)
+            self.TEMP1 = round(float(t), 2)
+            self.HUMIDITY = round(float(h), 2)
         except FileNotFoundError:
             print("Could not get i2c device")
-            return -18.1
-        except Exception as e:
-            print("Unknown error, ")
-            print(e)
-            return 0
             pass
+        except Exception as e:
+            print("Unknown error getting I2C temperature, ")
+            print(e)
+            pass
+
+        print("Getting temperature 2")
+        try:
+            sensor2 = W1ThermSensor()
+            self.TEMP2 = round(float(sensor2.get_temperature()), 2)
+        except Exception as e:
+            print("Unknown error getting 1-wire temperature, ")
+            print(e)
+            pass
+
+        return 0
     
-    @classmethod
+    #@classmethod
     def start(self):
+        # Add check here so that we don't try to start the compressor if it's already running
+        try:
+            if GPIO.input(self.COMP_GPIO_PIN) == 1:
+                print("Compressor is already running")
+                return 1
+        except Exception as e:
+            print("Got an exception checking compressor state:")
+            print(e)
+            pass
+
         print("Starting Compressor")
         try:
             GPIO.output(self.COMP_GPIO_PIN, GPIO.HIGH)
             self.COMP_STATE = 1
             self.COMP_ON_TIME = time.time()
-        except:
+        except Exception as e:
             print("Error starting compressor")
+            print(e)
             pass
 
-
         
-    @classmethod
+    #@classmethod
     def stop(self):
         print("Stopping Compressor")
         if (time.time() - self.COMP_ON_TIME) < 300:
             wait_time = 300 - (time.time() - self.COMP_ON_TIME)
             print("Compressor started less than 5 minutes ago, wait %d more seconds" % wait_time)
             return wait_time
-
         else:
             try:
                 GPIO.output(self.COMP_GPIO_PIN, GPIO.LOW)
