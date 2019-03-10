@@ -1,8 +1,12 @@
 # freezer_controller
-Replace the old thermostat with Linux, Python, a relay and a thermometer.
+Replacing an old broken freezer thermostat with Linux, Python, a relay and some thermometers.
 
 # Overview
-Components used:
+When my freezer at home stopped working I quickly found out that it was the thermostat that was broken.
+However, a new thermostat was $60 + shipping, something that I did not want to spend an a 15+ year old freezer.
+So I decided to build my own solution with some stuff that I already got at home, mostly as a fun learning project. :)
+
+Components used:  
 * Raspberry Pi Zero W
 * [DS18B20 1-Wire thermometer](/doc/ds18b20-1w-thermometer.md)
 * [AM2320B/SHT21 I2C thermometer + hygrometer](/doc/i2c-am2320b-thermometer.md)
@@ -10,21 +14,24 @@ Components used:
 * A solid state relay
 * An Electrolux EUC3107 Freezer (Could probably be applied to any fridge or freezer)
 
+For more information about the individual components, please see the links above.
 
 # Installation
 First you need to prepare the Raspberry pi and the operating system.
 We are going to use both 1-Wire, I2C and SPI which will require some setup:
-`sudo echo "dtoverlay=w1-gpio" >> /boot/config.txt`  
-`sudo echo "dtparam=i2c_arm=on" >> /boot/config.txt`  
-`sudo echo "dtparam=spi=on" >> /boot/config.txt`  
+```bash
+sudo echo "dtoverlay=w1-gpio" >> /boot/config.txt
+sudo echo "dtparam=i2c_arm=on" >> /boot/config.txt
+sudo echo "dtparam=spi=on" >> /boot/config.txt
+```
 
 ## Permissions
 To be able to run the application as a user, you need access to the I2C bus and the GPIO pins.
 
-Permissions to access I2C bus:
+Permissions to access I2C bus:  
 `sudo usermod -a -G i2c $USER`
 
-Permissions to access GPIO pins:
+Permissions to access GPIO pins:  
 `sudo usermod -a -G gpio $USER`
 
 ## Application
@@ -35,39 +42,21 @@ In Raspbian, run:
 Clone this repository:  
 `git clone git@github.com:sandnabba/freezer_controller.git`
 
-Checkout the submodule required to read the I2C thermometer:
+Checkout the submodule required to read the I2C thermometer:  
 `git submodule init` followed by `git submodule update`.
 
-
 # Run the application
+Start by setting up the configuration. Copy the `config.py.example` to `config.py`.
 
-# Metrics
-## What to alert on?
-* Absent
-* Low temp
-* High temp
-* Compressor on for long time?
+Currently there are no proper start script. The preferred method is to run the applictaion within a `screen`.
+Run the applictaion with:  
+`./env/bin/python main.py`
 
-# QA
-General things:
-* Disk full
-
-## Thermometer
-Lost connection (All 4 pins, one at a time)
-
-## Relay
-* Lost connection
-
-## Metrics  
-* Timeout
-* No route
-* Wrong route
-* Iptables DROP
-* Iptables REJECT
-
-## Logs (Correct log level, alert on >= ERROR)
 
 # ToDo
-Future improvements
+Future improvements:  
 * Can we detect if the door is open or not? Hook into existing switch, or add another sensor.
-*
+* Use the average temperature from both thermometers, detect if any of them are missing.
+  * If both thermometers is unavailable, run a 50% on/off cycle at 15 minutes
+* Write an systemD service with auto start and logging
+* Add a proper interrupt handler for handling shut down signals
