@@ -3,16 +3,16 @@ There seems to be quite a lot of different displays using this chip, all with a 
 The driver is included in the official Linux kernel since a while a go, which makes them really easy to use, as soon as you got it connected.
 
 Mine had the following pins, and this is how I connected it:  
-| Display | GPIO | Pin# |
-|---------|------|------|
-|   Led   | 9    | 21   |
-|   SCK   | 11   | 23   |
-|   SDA   | 10   | 19   |
-|   A0    | 24   | 18   |
-|   Reset | 25   | 22   |
-|   CS    | 8    | 24   |
-|   GND   |      | GND  |
-|   VCC   |      | 3.3v |
+| Display | GPIO | Pin# |  
+|---------|------|------|  
+|   Led   | 9    | 21   |  
+|   SCK   | 11   | 23   |  
+|   SDA   | 10   | 19   |  
+|   A0    | 24   | 18   |  
+|   Reset | 25   | 22   |  
+|   CS    | 8    | 24   |  
+|   GND   |      | GND  |  
+|   VCC   |      | 3.3v |  
 
 <img src="img/display_back.jpg" width="400">
 
