@@ -16,16 +16,16 @@ import time
 
 class Freezer:
     # Temperature:
-    TEMP1 = 0.0
-    TEMP2 = 0.0
-    HUMIDITY = 0.0
+    TEMP1 = None
+    TEMP2 = None
+    HUMIDITY = None
 
     # Compressor:
     COMP_GPIO_PIN = None # This is the GPIO-pin, not the physical pin, Connected to 14
-    COMP_STATE = 0
-    COMP_ON_TIME = 0
-    COMP_OFF_TIME = 0
-    COMP_STATE_CHANGE_TIME = 0
+    COMP_STATE = None
+    COMP_ON_TIME = None
+    COMP_OFF_TIME = None
+    COMP_STATE_CHANGE_TIME = None
 
 
     def __init__(self, COMP_PIN=None):
@@ -102,6 +102,10 @@ class Freezer:
             print(e)
             pass
 
+        # DEBUG:
+        self.COMP_STATE = 1
+        self.COMP_ON_TIME = time.time()
+
 
     def stop(self):
         logger.info("Stopping Compressor")
@@ -117,3 +121,7 @@ class Freezer:
             except:
                 logger.error("Error stopping compressor")
                 pass
+
+        # DEBUG:
+        self.COMP_STATE = 0
+        self.COMP_ON_TIME = time.time()

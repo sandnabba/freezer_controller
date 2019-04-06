@@ -61,18 +61,37 @@ def send_metrics(freezer):
 def main(freezer):
     logger.debug("Starting Main function")
     freezer.get_temperature()
-    logger.debug("Current temperature 1: %.2f" % freezer.TEMP1)
-    logger.debug("Current temperature 2: %.2f" % freezer.TEMP2)
+    logger.debug("Current temperature 1: %s" % freezer.TEMP1)
+    logger.debug("Current temperature 2: %s" % freezer.TEMP2)
 
-    if freezer.TEMP1 > config.MAX_TEMP:
-        # Temperature is to high:
-        freezer.start()
-    elif freezer.TEMP1 < config.MIN_TEMP:
-        # Temperature is to low
-        freezer.stop()
+    # If we don't have any temperature available, enter the emergency loop:
+    if freezer.TEMP1 == None and freezer.TEMP2 == None:
+        # Run compressor at a 40% duty cycle on a 15 minute interval
+        # On 10 minutes (600 seconds)
+        # Off 15 minutes (900 seconds)
+        logger.error("Entering emergency loop")
+        current_time = time.time()
+        if freezer.COMP_STATE == 1:
+            if (current_time - freezer.COMP_ON_TIME) > 600:
+                freezer.stop()
+        elif freezer.COMP_STATE == 0:
+            if (current_time - freezer.COMP_OFF_TIME) > 900:
+                freezer.start()
+        else:
+            # If nothing else, start the compressor:
+            freezer.start()
+
+
     else:
-        # Will this ever happen?
-        logger.debug("Temp OK")
+        if freezer.TEMP1 > config.MAX_TEMP:
+            # Temperature is to high:
+            freezer.start()
+        elif freezer.TEMP1 < config.MIN_TEMP:
+            # Temperature is to low
+            freezer.stop()
+        else:
+            # Will this ever happen?
+            logger.debug("Temp OK")
 
     # Just print a newline:
     #print()
