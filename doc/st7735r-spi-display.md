@@ -28,3 +28,7 @@ Then you can display an image, using `fbi`:
 ```bash
 fbi -a -v -T 1 -d /dev/fb1 -nocomments image.jpg
 ```
+
+## More information
+Adafruit:  
+https://www.adafruit.com/product/358
