@@ -39,7 +39,7 @@ def send_influx_metrics(freezer):
                 "measurement": "temperature",
                 "tags": {
                     "type": "i2c",
-                    "environment", config.ENVIRONMENT
+                    "environment": config.ENVIRONMENT,
                 },
                 "time": current_time,
                 "fields": {
@@ -50,7 +50,7 @@ def send_influx_metrics(freezer):
                 "measurement": "temperature",
                 "tags": {
                     "type": "1w",
-                    "environment", config.ENVIRONMENT
+                    "environment": config.ENVIRONMENT,
                 },
                 "time": current_time,
                 "fields": {
