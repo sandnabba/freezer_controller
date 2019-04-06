@@ -104,6 +104,15 @@ class Freezer:
 
 
     def stop(self):
+        try:
+            if GPIO.input(self.COMP_GPIO_PIN) == 0:
+                logger.debug("Compressor is already stopped")
+                return 1
+        except Exception as e:
+            logger.critical("Got an exception checking compressor state:")
+            print(e)
+            pass
+
         logger.info("Stopping Compressor")
         if (time.time() - self.COMP_ON_TIME) < 300:
             wait_time = 300 - (time.time() - self.COMP_ON_TIME)
