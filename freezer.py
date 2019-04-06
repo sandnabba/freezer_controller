@@ -69,6 +69,8 @@ class Freezer:
             print(e)
             pass
 
+        self.TEMP1 = -18.2
+
         logger.debug("Getting temperature 2")
         try:
             sensor2 = W1ThermSensor()
