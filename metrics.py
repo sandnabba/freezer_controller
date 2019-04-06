@@ -5,6 +5,7 @@ import datetime
 
 logger = logging.getLogger(__name__)
 
+import config
 
 def send_ao_metrics(freezer):
     try:
@@ -30,6 +31,7 @@ def send_ao_metrics(freezer):
 
 def send_influx_metrics(freezer):
     try:
+        current_time = datetime.datetime.now()
         logger.info("Sending metrics to InfluxDB")
         client = InfluxDBClient(host='10.1.0.1', port=8086, database='freezer')
         json_body = [
@@ -37,10 +39,22 @@ def send_influx_metrics(freezer):
                 "measurement": "temperature",
                 "tags": {
                     "type": "i2c",
+                    "environment", config.ENVIRONMENT
                 },
-                "time": datetime.datetime.now(),
+                "time": current_time,
                 "fields": {
                     "value": freezer.TEMP1
+                }
+            },
+            {
+                "measurement": "temperature",
+                "tags": {
+                    "type": "1w",
+                    "environment", config.ENVIRONMENT
+                },
+                "time": current_time,
+                "fields": {
+                    "value": freezer.TEMP2
                 }
             }
         ]
