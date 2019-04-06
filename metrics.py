@@ -33,7 +33,7 @@ def send_influx_metrics(freezer):
     try:
         current_time = datetime.datetime.now()
         logger.info("Sending metrics to InfluxDB")
-        client = InfluxDBClient(host='10.1.0.1', port=8086, database='freezer')
+        client = InfluxDBClient(host='10.1.0.1', port=8086, database='freezer', timeout=5)
         json_body = [
             {
                 "measurement": "temperature",
