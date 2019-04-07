@@ -32,8 +32,14 @@ def send_ao_metrics(freezer):
 def send_influx_metrics(freezer):
     try:
         current_time = datetime.datetime.now()
+
+        if freezer.COMP_STATE == 1:
+            COMP_STATE = "ON"
+        else:
+            COMP_STATE = "OFF"
+
         logger.info("Sending metrics to InfluxDB")
-        client = InfluxDBClient(host='10.1.0.1', port=8086, database='freezer', timeout=5)
+        client = InfluxDBClient(host=config.INFLUXDB["HOST"], port=8086, database='freezer', timeout=5)
         json_body = [
             {
                 "measurement": "temperature",
@@ -55,6 +61,28 @@ def send_influx_metrics(freezer):
                 "time": current_time,
                 "fields": {
                     "value": freezer.TEMP2
+                }
+            },
+            {
+                "measurement": "humidity",
+                "tags": {
+                    "type": "i2c",
+                    "environment": config.ENVIRONMENT,
+                },
+                "time": current_time,
+                "fields": {
+                    "value": freezer.HUMIDITY
+                }
+            },
+            {
+                "measurement": "compressor",
+                "tags": {
+                    "environment": config.ENVIRONMENT,
+                    "state": COMP_STATE
+                },
+                "time": current_time,
+                "fields": {
+                    "value": 1
                 }
             }
         ]
