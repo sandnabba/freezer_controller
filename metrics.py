@@ -31,7 +31,7 @@ def send_ao_metrics(freezer):
 
 def send_influx_metrics(freezer):
     try:
-        current_time = datetime.datetime.now()
+        current_time = datetime.datetime.utcnow()
 
         if freezer.COMP_STATE == 1:
             COMP_STATE = "ON"
