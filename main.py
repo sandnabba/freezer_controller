@@ -30,14 +30,10 @@ ao = appoptics_metrics.connect(config.APPOPTICS_KEY, tags={'ENVIRONMENT': "prod"
 freezer = Freezer(config.GPIO_PINS["COMP_PIN"])
 
 def send_metrics(freezer):
-    #### Check here if we have an AppOptics Token, if not, break
     if config.APPOPTICS_KEY:
         metrics.send_ao_metrics(freezer)
-
-    # Send InfluxDB metrics:
-    print("Sending influx")
-    metrics.send_influx_metrics(freezer)
-
+    if config.INFLUXDB["ENABLED"]:
+        metrics.send_influx_metrics(freezer)
 
 def main(freezer):
     logger.debug("Starting Main function")
@@ -54,9 +50,6 @@ def main(freezer):
     else:
         # Will this ever happen?
         logger.debug("Temp OK")
-
-    # Just print a newline:
-    #print()
 
 if __name__ == '__main__':
     while 1:
