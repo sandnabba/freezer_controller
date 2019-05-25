@@ -7,6 +7,7 @@ import time
 import appoptics_metrics
 import logging
 from freezer import Freezer
+import metrics
 
 # Load configuration:
 import config
@@ -29,34 +30,10 @@ ao = appoptics_metrics.connect(config.APPOPTICS_KEY, tags={'ENVIRONMENT': "prod"
 freezer = Freezer(config.GPIO_PINS["COMP_PIN"])
 
 def send_metrics(freezer):
-    #####
-
-    #### Check here if we have an AppOptics Token, if not, break
-    if config.APPOPTICS_KEY == None:
-        # We don't have an AppOptics key, no need to submit metrics
-        return 0
-    ####
-    try:
-        logger.debug("Sending metrics to AppOptics")
-        q = ao.new_queue()
-        q.add('freezer.temperature', freezer.TEMP1, tags={'type': 'i2c'}, inherit_tags=True)
-        q.add('freezer.temperature', freezer.TEMP2, tags={'type': '1w'}, inherit_tags=True)
-        q.add('freezer.humidity', freezer.HUMIDITY, tags={'type': 'i2c'}, inherit_tags=True)
-        q.add('freezer.comp_state', freezer.COMP_STATE, inherit_tags=True)
-        if freezer.COMP_STATE == 1:
-            q.add('freezer.comp_state_bool', 1, tags={'state': 'ON'}, inherit_tags=True)
-        else:
-            q.add('freezer.comp_state_bool', 1, tags={'state': 'OFF'}, inherit_tags=True)
-        q.submit()
-
-    except appoptics_metrics.exceptions.Unauthorized:
-        logger.error("Wrong AppOptics key, could not submit metrics")
-        pass
-    except Exception as e:
-        logger.error("An ERROR occured while sending metrics to AppOptics")
-        print(e)
-        pass
-
+    if config.APPOPTICS_KEY:
+        metrics.send_ao_metrics(freezer)
+    if config.INFLUXDB["ENABLED"]:
+        metrics.send_influx_metrics(freezer)
 
 def main(freezer):
     logger.debug("Starting Main function")
@@ -73,9 +50,6 @@ def main(freezer):
     else:
         # Will this ever happen?
         logger.debug("Temp OK")
-
-    # Just print a newline:
-    #print()
 
 if __name__ == '__main__':
     while 1:
