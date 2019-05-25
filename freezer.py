@@ -78,9 +78,9 @@ class Freezer:
         logger.debug("Getting temperature 2")
         try:
             sensor2 = W1ThermSensor()
-            self.TEMP['ds12b20'] = round(float(sensor2.get_temperature()), 2)
+            self.TEMP['ds12b20']['temperature'] = round(float(sensor2.get_temperature()), 2)
         except Exception as e:
-            self.TEMP['ds12b20'] = None
+            self.TEMP['ds12b20']['temperature'] = None
             logger.error("Unknown error getting 1-wire temperature, ")
             print(e)
             pass
@@ -91,7 +91,7 @@ class Freezer:
         active_sensors = 0
         temp = 0
         for t in self.TEMP.values():
-            if t['temperature']:
+            if t['temperature'] is not None:
                 active_sensors += 1
                 temp += t['temperature']
 
