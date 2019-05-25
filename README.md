@@ -56,7 +56,6 @@ Run the applictaion with:
 # ToDo
 Future improvements:  
 * Can we detect if the door is open or not? Hook into existing switch, or add another sensor.
-* Use the average temperature from both thermometers, detect if any of them are missing.
-  * If both thermometers is unavailable, run a 50% on/off cycle at 15 minutes
+* If both thermometers is unavailable, run a 50% on/off cycle at 15 minutes
 * Write an systemD service with auto start and logging
 * Add a proper interrupt handler for handling shut down signals
