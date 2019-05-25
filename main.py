@@ -37,19 +37,25 @@ def send_metrics(freezer):
 
 def main(freezer):
     logger.debug("Starting Main function")
-    freezer.get_temperature()
-    logger.debug("Current temperature 1: %.2f" % freezer.TEMP1)
-    logger.debug("Current temperature 2: %.2f" % freezer.TEMP2)
+    if freezer.get_temperature():
+        # Debug, print temperatures:
+        for t,n in zip(freezer.TEMP.values(), freezer.TEMP):
+            if t['temperature']:
+                logger.debug("Current temperature %s: %.2f, type: %s" % (n, t['temperature'], t['type']))
 
-    if freezer.TEMP1 > config.MAX_TEMP:
-        # Temperature is to high:
-        freezer.start()
-    elif freezer.TEMP1 < config.MIN_TEMP:
-        # Temperature is to low
-        freezer.stop()
+        if freezer.AVG_TEMP > config.MAX_TEMP:
+            # Temperature is to high:
+            freezer.start()
+        elif freezer.AVG_TEMP < config.MIN_TEMP:
+            # Temperature is to low
+            freezer.stop()
+        else:
+            # All good
+            logger.debug("Temp OK")
     else:
-        # Will this ever happen?
-        logger.debug("Temp OK")
+        logger.critical("Not getting temperature!")
+        # Enter emergency loop here
+
 
 if __name__ == '__main__':
     while 1:
