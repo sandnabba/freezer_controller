@@ -15,10 +15,16 @@ except RuntimeError:
 import time
 
 class Freezer:
-    # Temperature:
-    TEMP1 = 0.0
-    TEMP2 = 0.0
+    ### Temperature:
+    # Add an item to the dict, like:
+    # "name" = {'temperature': 'value', 'type': 'type'},
+
+    TEMP = {
+        'am2320': {'temperature': None, 'type': 'i2c'},
+        "ds12b20": {'temperature': None, 'type': '1w'}
+    }
     HUMIDITY = 0.0
+    AVG_TEMP = None
 
     # Compressor:
     COMP_GPIO_PIN = None # This is the GPIO-pin, not the physical pin, Connected to 14
@@ -33,8 +39,6 @@ class Freezer:
         logger.info("Compressor_Pin: %s" % COMP_PIN)
         self.COMP_GPIO_PIN = COMP_PIN
         self.get_temperature()
-        logger.info("Temp1: %s" % self.TEMP1)
-        logger.info("Temp2: %s" % self.TEMP2)
 
         # Setup compressor pin:
         try:
@@ -59,12 +63,14 @@ class Freezer:
         try:
             sensor = AM2320(1)
             (t,h) = sensor.readSensor()
-            self.TEMP1 = round(float(t), 2)
             self.HUMIDITY = round(float(h), 2)
+            self.TEMP["am2320"]['temperature'] = round(float(t), 2)
         except FileNotFoundError:
+            self.TEMP["am2320"]['temperature'] = None
             logger.error("Could not get i2c device")
             pass
         except Exception as e:
+            self.TEMP["am2320"]['temperature'] = None
             logger.error("Unknown error getting I2C temperature, ")
             print(e)
             pass
@@ -72,13 +78,30 @@ class Freezer:
         logger.debug("Getting temperature 2")
         try:
             sensor2 = W1ThermSensor()
-            self.TEMP2 = round(float(sensor2.get_temperature()), 2)
+            self.TEMP['ds12b20'] = round(float(sensor2.get_temperature()), 2)
         except Exception as e:
+            self.TEMP['ds12b20'] = None
             logger.error("Unknown error getting 1-wire temperature, ")
             print(e)
             pass
 
-        return 0
+        # Calculate AVG here.
+        # Future improvement: Move reading of temperatures to it's own funciton,
+        # so that get_temperature() only returns the average value.
+        active_sensors = 0
+        temp = 0
+        for t in self.TEMP.values():
+            if t['temperature']:
+                active_sensors += 1
+                temp += t['temperature']
+
+        if active_sensors == 0:
+            return None
+
+        temp = temp / active_sensors
+        self.AVG_TEMP = temp
+
+        return temp
 
 
     def start(self):
